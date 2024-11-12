@@ -5,7 +5,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Importa SharedPreferences
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String apiKey = "AIzaSyA-DsUGNFOHWfNV5DmgFUkva2JaPyLLHHg";
 
@@ -38,10 +38,9 @@ class _ChatScreenState extends State<ChatScreen> {
     requestMicrophonePermission();
     _checkConnectivity();
     Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
-    _loadChatHistory(); // Cargar el historial de mensajes al iniciar
+    _loadChatHistory();
   }
 
-  // Cargar el historial guardado
   Future<void> _loadChatHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final history = prefs.getStringList('chat_history') ?? [];
@@ -59,7 +58,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // Guardar el historial de mensajes
   Future<void> _saveChatHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final history = _messages
@@ -121,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       _scrollDown();
       await _speak(text);
-      _saveChatHistory(); // Guardar el historial después de enviar un mensaje
+      _saveChatHistory();
     } catch (e) {
       setState(() {
         _messages.add(
@@ -198,18 +196,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // Limpiar la conversación
   void _clearConversation() {
     setState(() {
       _messages.clear();
     });
-    _saveChatHistory(); // Guardar el historial vacío
+    _saveChatHistory();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE0F7FA), // Color de fondo claro
+      backgroundColor: const Color(0xFFE0F7FA),
       appBar: AppBar(
         title: const Text('Mi chat inteligente'),
         centerTitle: true,
@@ -220,7 +217,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.clear),
-            onPressed: _clearConversation, // Limpiar la conversación
+            onPressed: _clearConversation,
           ),
         ],
       ),
@@ -242,7 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: Icon(
                     _isListening ? Icons.mic_off : Icons.mic,
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: Colors.white,
                     size: 32,
                   ),
                   onPressed: _isListening ? _stopListening : _startListening,
@@ -252,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onSubmitted: _isConnectedToWifi ? _sendChatMessage : null,
                     controller: _textController,
                     decoration: InputDecoration(
-                      hintText: 'Envia un mensaje...',
+                      hintText: 'Envía un mensaje...',
                       hintStyle: const TextStyle(color: Colors.white),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -284,55 +281,66 @@ class ChatMessage {
   final bool isUser;
   final String time;
 
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.time,
-  });
+  ChatMessage({required this.text, required this.isUser, required this.time});
 }
 
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
 
-  const ChatBubble({super.key, required this.message});
+  ChatBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
-    // Definir el tamaño de la fuente para usuario y bot
-    double fontSize = message.isUser ? 16.0 : 14.0; // Mensajes de usuario más grandes
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Align(
-        alignment:
-            message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: message.isUser ? Colors.blue : Colors.grey[300],
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                message.text,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  color: message.isUser ? Colors.white : Colors.black,
-                ),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment:
+            message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (!message.isUser)
+            const CircleAvatar(
+              backgroundImage: AssetImage('assets/UP.jpg'),
+            ),
+          Padding(
+            padding: message.isUser
+                ? const EdgeInsets.only(left: 8.0)
+                : const EdgeInsets.only(right: 8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.6, // Limitar ancho
               ),
-              const SizedBox(height: 5),
-              Text(
-                message.time,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.black45,
-                ),
+              decoration: BoxDecoration(
+                color: message.isUser ? Colors.blue : Colors.grey[300],
+                borderRadius: BorderRadius.circular(15),
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.text,
+                    style: TextStyle(
+                      fontSize: message.isUser ? 16.0 : 14.0, // Ajuste del tamaño del texto
+                      color: message.isUser ? Colors.white : Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    message.time,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.black45,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+          if (message.isUser)
+            const CircleAvatar(
+              backgroundImage: AssetImage('assets/usuario.jpg'),
+            ),
+        ],
       ),
     );
   }
