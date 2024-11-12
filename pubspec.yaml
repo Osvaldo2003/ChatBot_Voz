@@ -1,0 +1,37 @@
+name: osva
+description: "A new Flutter project."
+publish_to: 'none'  # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  geolocator: ^9.0.0 
+  url_launcher: ^6.0.20
+  google_generative_ai: ^0.4.6
+  speech_to_text: ^7.0.0
+  permission_handler: ^10.0.0
+  flutter_tts: ^3.3.0
+  intl: ^0.17.0
+  http: ^1.1.0
+  connectivity_plus: ^4.0.1
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.1.0 
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.jpeg
+    - assets/usuario.jpg
+    - assets/UP.jpg
+
