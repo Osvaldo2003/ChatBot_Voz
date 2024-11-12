@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactsScreen extends StatelessWidget {
   const ContactsScreen({super.key});
 
-  final String _gitUrl = 'https://github.com/Osvaldo2003/APP_PRACTICA2.git';
+  final String _gitUrl = 'https://github.com/Osvaldo2003/ChatBot_Voz.git';
 
   @override
   Widget build(BuildContext context) {
