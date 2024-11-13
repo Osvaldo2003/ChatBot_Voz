@@ -110,7 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       _messages
           .add(ChatMessage(text: '...', isUser: false, time: formattedTime));
-      final response = await _chat.sendMessage(Content.text(message));
+      final response = await _chat.sendMessage(Content.text("help me practice english with short response. $message"));
       final text = response.text ?? 'No se recibió respuesta';
       setState(() {
         _messages.removeLast();
