@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:osva/screen/home.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final Uri _url = Uri.parse('https://github.com/Osvaldo2003/APP_PRACTICA2.git');
+final Uri _url = Uri.parse('https://github.com/Osvaldo2003/ChatBot_Voz.git');
 
 void main() {
   runApp(const MyApp());
