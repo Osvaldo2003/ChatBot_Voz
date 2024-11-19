@@ -87,11 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _scrollDown() {
     if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.position.pixels;
-      if ((maxScroll - currentScroll) <= 200) {
-        _scrollController.jumpTo(maxScroll);
-      }
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     }
   }
 
@@ -110,7 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       _messages
           .add(ChatMessage(text: '...', isUser: false, time: formattedTime));
-      final response = await _chat.sendMessage(Content.text("help"));
+      final response = await _chat.sendMessage(Content.text(message));
       final text = response.text ?? 'No se recibió respuesta';
       setState(() {
         _messages.removeLast();
@@ -239,23 +235,31 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: Icon(
                     _isListening ? Icons.mic_off : Icons.mic,
-                    color: Colors.white,
+                    color: Colors.blue,
                     size: 32,
                   ),
                   onPressed: _isListening ? _stopListening : _startListening,
                 ),
-                Expanded(
-                  child: TextField(
-                    onSubmitted: _isConnectedToWifi ? _sendChatMessage : null,
-                    controller: _textController,
-                    decoration: InputDecoration(
-                      hintText: 'Envía un mensaje...',
-                      hintStyle: const TextStyle(color: Colors.white),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 5, 131, 243),
-                          width: 2,
+                Flexible(
+                  child: Container(
+                    constraints: const BoxConstraints(maxHeight: 48),
+                    child: TextField(
+                      onSubmitted:
+                          _isConnectedToWifi ? _sendChatMessage : null,
+                      controller: _textController,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 16.0,
+                        ),
+                        hintText: 'Envía un mensaje...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -287,7 +291,7 @@ class ChatMessage {
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
 
-  ChatBubble({super.key, required this.message});
+  const ChatBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -296,48 +300,62 @@ class ChatBubble extends StatelessWidget {
       child: Row(
         mainAxisAlignment:
             message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (!message.isUser)
-            const CircleAvatar(
-              backgroundImage: AssetImage('assets/UP.jpg'),
+          if (!message.isUser) // Avatar del sistema
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: AssetImage('assets/UP.jpg'), // Imagen del sistema
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          Padding(
-            padding: message.isUser
-                ? const EdgeInsets.only(left: 8.0)
-                : const EdgeInsets.only(right: 8.0),
-            child: Column(
-              crossAxisAlignment:
-                  message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Material(
-                  color: message.isUser
-                      ? const Color.fromARGB(255, 35, 150, 246)
-                      : const Color(0xFFf0f0f0),
-                  borderRadius: BorderRadius.circular(12),
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(
-                      message.text,
-                      style: TextStyle(
-                        color: message.isUser ? Colors.white : Colors.black,
-                      ),
+          if (!message.isUser) const SizedBox(width: 8.0), // Espacio entre avatar y mensaje
+
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 10.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: message.isUser ? Colors.blue[100] : Colors.grey[300],
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    message.text,
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  const SizedBox(height: 4.0),
+                  Text(
+                    message.time,
+                    style: const TextStyle(
+                      fontSize: 10.0,
+                      color: Colors.grey,
                     ),
                   ),
-                ),
-                Text(
-                  message.time,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          if (message.isUser)
-            const CircleAvatar(
-              backgroundImage: AssetImage('assets/UP.jpg'),
+
+          if (message.isUser) const SizedBox(width: 8.0), // Espacio entre mensaje y avatar
+          if (message.isUser) // Avatar del usuario
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: AssetImage('assets/usuario.jpg'), // Imagen del usuario
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
         ],
       ),
