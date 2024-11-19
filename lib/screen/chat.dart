@@ -110,7 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       _messages
           .add(ChatMessage(text: '...', isUser: false, time: formattedTime));
-      final response = await _chat.sendMessage(Content.text("help me practice english with short response. $message"));
+      final response = await _chat.sendMessage(Content.text("help"));
       final text = response.text ?? 'No se recibió respuesta';
       setState(() {
         _messages.removeLast();
@@ -305,40 +305,39 @@ class ChatBubble extends StatelessWidget {
             padding: message.isUser
                 ? const EdgeInsets.only(left: 8.0)
                 : const EdgeInsets.only(right: 8.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.6, // Limitar ancho
-              ),
-              decoration: BoxDecoration(
-                color: message.isUser ? Colors.blue : Colors.grey[300],
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      fontSize: message.isUser ? 16.0 : 14.0, // Ajuste del tamaño del texto
-                      color: message.isUser ? Colors.white : Colors.black,
+            child: Column(
+              crossAxisAlignment:
+                  message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Material(
+                  color: message.isUser
+                      ? const Color.fromARGB(255, 35, 150, 246)
+                      : const Color(0xFFf0f0f0),
+                  borderRadius: BorderRadius.circular(12),
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Text(
+                      message.text,
+                      style: TextStyle(
+                        color: message.isUser ? Colors.white : Colors.black,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    message.time,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.black45,
-                    ),
+                ),
+                Text(
+                  message.time,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           if (message.isUser)
             const CircleAvatar(
-              backgroundImage: AssetImage('assets/usuario.jpg'),
+              backgroundImage: AssetImage('assets/UP.jpg'),
             ),
         ],
       ),
